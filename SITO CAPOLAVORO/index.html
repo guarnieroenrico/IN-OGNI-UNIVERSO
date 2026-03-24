@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COMING SOON - IN OGNI UNIVERSO</title>
+    <style>
+        /* RESET E BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* CONTENITORE PRINCIPALE */
+        .container {
+            text-align: center;
+            z-index: 10;
+            padding: 20px;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .container.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95);
+        }
+
+        /* TITOLO */
+        .title {
+            font-size: 4rem;
+            font-weight: 300;
+            letter-spacing: 15px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            animation: flicker 3s infinite alternate;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            letter-spacing: 5px;
+            color: #888;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+        }
+
+        /* PULSANTE */
+        .btn-play {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 15px 40px;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .btn-play:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        /* SFONDO ANIMATO */
+        .background-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* --- STILE LOGO --- */
+        .logo-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 20;
+            opacity: 0.8;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .logo-container:hover {
+            opacity: 1;
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        .logo-container img {
+            height: 60px;
+            width: auto;
+        }
+
+        /* --- STILE VIDEO CENTERED --- */
+        .video-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.9);
+            
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+
+        .video-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 80%;
+            max-width: 1000px;
+            background: #000;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            
+            transform: scale(0.8) translateY(20px);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .video-modal.active .video-wrapper {
+            transform: scale(1) translateY(0);
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            font-size: 1.5rem;
+            color: #fff;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s, transform 0.3s;
+            padding: 5px 10px;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+        /* ANIMAZIONE FLICKER */
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.8; }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .title { font-size: 2rem; letter-spacing: 5px; }
+            .subtitle { font-size: 0.8rem; }
+            .video-wrapper { width: 95%; }
+            .logo-container { bottom: 10px; right: 10px; }
+            .logo-container img { height: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sfondo Animato -->
+    <canvas class="background-canvas" id="canvas"></canvas>
+
+    <!-- Logo ISISS MATESE -->
+    <div class="logo-container">
+        <img src="https://z-cdn-media.chatglm.cn/files/e8a03a0c-c45b-4433-bc8b-1bb26464645d.png?auth_key=1874384260-8f73560a460442b78cce3c7d2c28d196-0-c24e3493fa7c0a0958ff544430d388a9" alt="ISISS MATESE Logo">
+    </div>
+
+    <!-- Contenuto Principale -->
+    <div class="container" id="main-content">
+        <h1 class="title">Prossimamente</h1>
+        <p class="subtitle">Un'esperienza visiva unica</p>
+        <button class="btn-play" id="reveal-btn">Inizia la visione</button>
+    </div>
+
+    <!-- Video Modale Centrato -->
+    <div class="video-modal" id="video-modal">
+        <div class="video-wrapper">
+            <span class="close-btn" id="close-btn">&#10005;</span>
+            <!-- VIDEO CON LOOP E AUTOPLAY ATTIVI -->
+            <video id="my-video" controls loop autoplay>
+                <source src="0324.mp4" type="video/mp4">
+                Il tuo browser non supporta il tag video.
+            </video>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. ANIMAZIONE SFONDO ---
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > width) this.speedX *= -1;
+                if (this.y < 0 || this.y > height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const num = Math.floor((width * height) / 10000);
+            for (let i = 0; i < num; i++) particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('resize', () => { resize(); initParticles(); });
+        resize(); initParticles(); animateParticles();
+
+        // --- 2. LOGICA VIDEO ---
+        const revealBtn = document.getElementById('reveal-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const videoModal = document.getElementById('video-modal');
+        const mainContent = document.getElementById('main-content');
+        const video = document.getElementById('my-video');
+
+        // Apri Video
+        revealBtn.addEventListener('click', () => {
+            mainContent.classList.add('hidden');
+            videoModal.classList.add('active');
+            // Piccolo ritardo per sincronizzare l'apertura con l'autoplay
+            setTimeout(() => video.play(), 300);
+        });
+
+        // Chiudi Video
+        closeBtn.addEventListener('click', () => {
+            video.pause();
+            // Non resettiamo il tempo (currentTime = 0) se vogliamo che 
+            // riaprendolo riparta da dove era, ma per un loop di solito si resetta:
+            video.currentTime = 0; 
+            videoModal.classList.remove('active');
+            mainContent.classList.remove('hidden');
+        });
+        
+        // Chiudi cliccando fuori dal video
+        videoModal.addEventListener('click', (e) => {
+            if(e.target === videoModal) {
+                closeBtn.click();
+            }
+        });
+
+    </script>
+</body>
+</html>
